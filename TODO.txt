@@ -1,0 +1,54 @@
+PersonalFinanceTracker/
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py             # Entry point of the application
+│   ├── config.py           # Configuration settings, e.g., database path
+│   ├── database.py         # Database interactions (SQLite)
+│   ├── login.py            # Login window
+│   ├── dashboard.py        # User dashboard
+│   ├── transactions.py     # Manage financial transactions
+│   ├── budget.py           # Budget planning and tracking
+│   └── reports.py          # Generate and display reports
+│
+├── tests/
+│   ├── __init__.py
+│   ├── test_database.py    # Tests for database interactions
+│   ├── test_login.py       # Tests for login functionality
+│   └── ...                 # Other tests
+│
+├── docs/
+│   ├── setup.md            # Setup instructions
+│   ├── usage.md            # How to use the application
+│   └── contribution.md     # Contribution guidelines
+│
+├── requirements.txt        # Project dependencies
+└── README.md               # Project overview and general information
+
+    app/__init__.py
+Initializes the application package. You might want to set up application-wide settings or logger configurations here in the future.
+
+    app/main.py
+This is the entry point of the application. It will initialize the Tkinter window and load the login screen or dashboard if the user is already logged in.
+python
+
+    app/config.py
+Placeholder for configuration settings. Future additions could include encryption keys for password storage, database connection details, or external API keys.
+
+    app/database.py
+Handles SQLite database connections, and CRUD operations for users, transactions, and budgets. Future enhancements could include more complex queries for analytics and reports.
+
+    app/login.py
+Defines the login window and authentication logic. Future work could incorporate more robust security measures and user management features.
+
+    app/dashboard.py
+The main user interface after login, showing an overview of the user's financial snapshot. Future additions might include interactive widgets for real-time financial insights.
+
+    app/transactions.py
+For managing financial transactions. This module will evolve to include categorization, filtering, and possibly linking transactions to specific budget items.
+
+    app/budget.py
+Handles budget creation, modification, and tracking against actual spending. Future enhancements could include notifications for budget thresholds or suggestions for budget adjustments based on spending patterns.
+    
+    app/reports.py
+Generates financial reports and insights. Initially, this could be simple visualizations of spending over time, with scope for more complex analytics in the future.
