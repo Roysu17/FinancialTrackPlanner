@@ -1,43 +1,32 @@
-from tkinter import *
+import tkinter as tk
 from tkinter import messagebox
 
-class LoginFrame(Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Login Page")
-        self.geometry('1280x720')
+def authenticate(username, password):
+    # Placeholder authentication logic
+    return username == "user" and password == "password"
 
-        # Create frame to hold login elements
-        self.loginframe = Frame(self)
-        self.loginframe.pack(expand=True)
+class LoginWindow(tk.Frame):
+    def __init__(self, parent, on_success):
+        super().__init__(parent)  # No *args or **kwargs if they are not used elsewhere
+        self.parent = parent
+        self.on_success = on_success
+        self.init_ui()
 
-        # Create username section
-        self.usernamelabel = Label(self.loginframe, text="Username:")
-        self.usernamelabel.pack(pady=10)
+    def init_ui(self):
+        self.username = tk.Entry(self)
+        self.username.grid(row=0, column=1)
 
-        self.username_entry = Entry(self.loginframe)
-        self.username_entry.pack(pady=5)
+        self.password = tk.Entry(self, show="*")
+        self.password.grid(row=1, column=1)
 
-        # Create password section
-        self.password_label = Label(self.loginframe, text="Password:")
-        self.password_label.pack(pady=10)
+        login_button = tk.Button(self, text="Login", command=self.on_login_clicked)
+        login_button.grid(row=2, column=0, columnspan=2)
 
-        self.password_entry = Entry(self.loginframe, show="*")
-        self.password_entry.pack(pady=5)
-
-        # Create login button
-        self.login_button = Button(self.loginframe, text="Login", command=self.login)
-        self.login_button.pack(pady=10)
-
-    def login(self):
-        username = self.username_entry.get()
-        password = self.password_entry.get()
-
-        # Check if username and password are correct
-        if username == "admin" and password == "password":
-            messagebox.showinfo("Login Successful", "Welcome, " + username + "!")
+    def on_login_clicked(self):
+        if authenticate(self.username.get(), self.password.get()):
+            messagebox.showinfo("Login Success", "You have successfully logged in.")
+            self.on_success()  # Trigger the callback on successful login
         else:
             messagebox.showerror("Login Failed", "Invalid username or password")
 
-app = LoginFrame()
-app.mainloop()
+# Ensure the rest of your main.py is updated to reflect this correction
