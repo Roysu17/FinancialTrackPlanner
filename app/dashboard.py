@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
+from database import get_account_summary, get_recent_transactions  # Assuming these functions exist
 
 class Dashboard(tk.Frame):
-    def __init__(self, parent, *args, **kwargs):
+    def __init__(self, parent, user_id, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
+        self.user_id = user_id  # Store the user_id for database queries
 
         # Set up the layout into rows and columns
         self.grid_columnconfigure(0, weight=1)
@@ -26,10 +28,10 @@ class Dashboard(tk.Frame):
 
         tk.Label(summary_frame, text="Account Summary", font=("Arial", 14)).pack(pady=10)
 
-        # Example summary details, dynamically populate based on user data
-        tk.Label(summary_frame, text="Checking: $1,234.56").pack()
-        tk.Label(summary_frame, text="Savings: $4,567.89").pack()
-        tk.Label(summary_frame, text="Credit Card: -$678.90").pack()
+        # Fetch and display the account summary for the user
+        account_summary = get_account_summary(self.user_id)
+        for account_type, amount in account_summary.items():
+            tk.Label(summary_frame, text=f"{account_type}: ${amount}").pack()
 
     def setup_details_section(self):
         # Detail frame for showing graphs or detailed transactions
@@ -38,13 +40,15 @@ class Dashboard(tk.Frame):
 
         tk.Label(details_frame, text="Recent Transactions", font=("Arial", 14)).pack(pady=10)
 
-        # Placeholder for detailed info, e.g., a graph or a list of recent transactions
-        # For demonstration, here we just use a text label
-        tk.Label(details_frame, text="Transaction details will be displayed here.").pack()
+        # Fetch and display recent transactions for the user
+        transactions = get_recent_transactions(self.user_id)
+        for transaction in transactions:
+            tk.Label(details_frame, text=f"{transaction['date']} - {transaction['category']}: ${transaction['cost']} - {transaction['details']}").pack()
 
 # The following code is for testing purposes
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry("800x600")
-    Dashboard(root).pack(fill="both", expand=True)
+    # Pass a dummy user_id for testing
+    Dashboard(root, 'dummy_user_id').pack(fill="both", expand=True)
     root.mainloop()

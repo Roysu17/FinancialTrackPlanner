@@ -78,14 +78,72 @@ def get_transactions_by_user(user_id):
     conn.close()
     return transactions
 
+def get_account_summary(user_id):
+    """Retrieve account summary for a given user."""
+    sql = """
+    SELECT category, SUM(cost) AS total
+    FROM transactions
+    WHERE user_id = ?
+    GROUP BY category
+    """
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id,))
+    summary = {}
+    for row in c.fetchall():
+        category, total = row
+        summary[category] = total
+    conn.close()
+    return summary
+
+def get_recent_transactions(user_id, limit=10):
+    """Retrieve recent transactions for a given user."""
+    sql = """
+    SELECT date, category, cost, details
+    FROM transactions
+    WHERE user_id = ?
+    ORDER BY date DESC
+    LIMIT ?
+    """
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id, limit))
+    transactions = []
+    for row in c.fetchall():
+        date, category, cost, details = row
+        transactions.append({
+            'date': date,
+            'category': category,
+            'cost': cost,
+            'details': details
+        })
+    conn.close()
+    return transactions
+
+def get_user_id(username):
+    """Retrieve the user ID based on the username."""
+    sql = "SELECT id FROM users WHERE username = ?"
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (username,))
+    user = c.fetchone()
+    conn.close()
+    if user:
+        return user[0]  # Return the user ID
+    else:
+        return None  # Return None if the user does not exist
+
+
 # Ensure the database and tables are created at initial run
 setup_database()
 
-# Example Usage (Uncomment to test)
-# add_user("john_doe", "securepassword123")
-# print(verify_user("john_doe", "securepassword123"))
-# add_transaction(1, "2024-03-26", "FOOD", 15.50, "Lunch at Subway")
-# print(get_transactions_by_user(1))
+if __name__ == "__main__":
+    #Example Usage (Uncomment to test)
+    #add_user("user", "password")
+    print(verify_user("user", "password"))
+    add_transaction(1, "2024-03-26", "FOOD", 15.50, "Lunch at Subway")
+    print(get_recent_transactions(1))
+    
 
 
 """

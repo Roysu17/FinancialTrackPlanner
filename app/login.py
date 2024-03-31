@@ -1,9 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-
-def authenticate(username, password):
-    # Placeholder authentication logic
-    return username == "user" and password == "password"
+from database import verify_user, get_user_id  # Import the necessary functions
 
 class LoginWindow(tk.Frame):
     def __init__(self, parent, on_success):
@@ -23,10 +20,11 @@ class LoginWindow(tk.Frame):
         login_button.grid(row=2, column=0, columnspan=2)
 
     def on_login_clicked(self):
-        if authenticate(self.username.get(), self.password.get()):
+        username = self.username.get()
+        password = self.password.get()
+        user_id = get_user_id(username)  # Fetch the user ID
+        if verify_user(username, password):
             messagebox.showinfo("Login Success", "You have successfully logged in.")
-            self.on_success()  # Trigger the callback on successful login
+            self.on_success(user_id)  # Pass the user ID to the callback
         else:
             messagebox.showerror("Login Failed", "Invalid username or password")
-
-# Ensure the rest of your main.py is updated to reflect this correction
