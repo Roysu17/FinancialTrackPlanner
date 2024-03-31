@@ -86,3 +86,22 @@ setup_database()
 # print(verify_user("john_doe", "securepassword123"))
 # add_transaction(1, "2024-03-26", "FOOD", 15.50, "Lunch at Subway")
 # print(get_transactions_by_user(1))
+
+
+"""
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL -- In a real app, this should be a hashed password
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    date TEXT NOT NULL, -- ISO8601 dates ('YYYY-MM-DD HH:MM:SS.SSS')
+    category TEXT NOT NULL,
+    cost REAL NOT NULL,
+    details TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+"""
