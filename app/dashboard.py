@@ -1,7 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, Menu
 from database import get_account_summary, get_recent_transactions  # Assuming these functions exist
-
+import os
 class Dashboard(tk.Frame):
     def __init__(self, parent, user_id, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
@@ -20,6 +20,23 @@ class Dashboard(tk.Frame):
 
         # Right column for graphs or more detailed info
         self.setup_details_section()
+        self.setup_menu()
+
+    def setup_menu(self):
+        menubar = Menu(self.master)
+        self.master.config(menu=menubar)
+
+        # Adding menu items directly to the menubar
+        menubar.add_command(label="Sign Out", command=lambda: self.navigate_to('main.py'))
+        menubar.add_command(label="Dashboard", command=lambda: self.navigate_to('dashboard.py'))
+        menubar.add_command(label="Transaction", command=lambda: self.navigate_to('transaction.py'))
+        menubar.add_command(label="Budget", command=lambda: self.navigate_to('budget.py'))
+        menubar.add_command(label="Report", command=lambda: self.navigate_to('report.py'))
+
+    def navigate_to(self, filepath):
+        # Close the current window and open the target Python file
+        self.master.destroy()
+        os.system(f'python {filepath} {self.user_id}')
 
     def setup_summary_section(self):
         # Summary frame
