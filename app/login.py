@@ -1,27 +1,39 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import *
 from database import verify_user, get_user_id  # Import the necessary functions
 
 class LoginWindow(tk.Frame):
     def __init__(self, parent, on_success):
-        super().__init__(parent)  # No *args or **kwargs if they are not used elsewhere
+        super().__init__(parent)  # No args or **kwargs if they are not used elsewhere
         self.parent = parent
         self.on_success = on_success
-        self.init_ui()
 
-    def init_ui(self):
-        self.username = tk.Entry(self)
-        self.username.grid(row=0, column=1)
+        # Create frame to hold login elements
+        self.login_frame = Frame(self.parent)
+        self.login_frame.pack(expand=True)
 
-        self.password = tk.Entry(self, show="*")
-        self.password.grid(row=1, column=1)
+        # Create username section
+        self.username_label = Label(self.login_frame, text="Username:")
+        self.username_label.pack(pady=10)
 
-        login_button = tk.Button(self, text="Login", command=self.on_login_clicked)
-        login_button.grid(row=2, column=0, columnspan=2)
+        self.username_entry = Entry(self.login_frame)
+        self.username_entry.pack(pady=5)
+
+        # Create password section
+        self.password_label = Label(self.login_frame, text="Password:")
+        self.password_label.pack(pady=10)
+
+        self.password_entry = Entry(self.login_frame, show="*")
+        self.password_entry.pack(pady=5)
+
+        # Create login button
+        self.login_button = Button(self.login_frame, text="Login", command=self.on_login_clicked)
+        self.login_button.pack(pady=10)
 
     def on_login_clicked(self):
-        username = self.username.get()
-        password = self.password.get()
+        username = self.username_entry.get()
+        password = self.password_entry.get()
         user_id = get_user_id(username)  # Fetch the user ID
         if verify_user(username, password):
             messagebox.showinfo("Login Success", "You have successfully logged in.")
