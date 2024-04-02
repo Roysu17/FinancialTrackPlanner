@@ -1,8 +1,13 @@
 # Database interactions (SQLite)
+import os
 import sqlite3
 import bcrypt
 
-DATABASE_PATH = "finance_tracker.db"  # Adjust as necessary
+# Determine the directory of this script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Set the database path to be within the script's directory
+DATABASE_PATH = os.path.join(script_dir, "finance_tracker.db")
 
 def create_connection():
     """Create and return a database connection."""
@@ -141,8 +146,8 @@ if __name__ == "__main__":
     #Example Usage (Uncomment to test)
     add_user("1", "1")
     #print(verify_user("user", "password"))
-    add_transaction(1, "2024-03-26", "FOOD", 15.50, "Lunch at Subway")
-    add_transaction(1, "2024-03-26", "SCHOOL", 1500.50, "UOFT")
+    add_transaction(1, "2024-03-26", "Food", 15.50, "Lunch at Subway")
+    add_transaction(1, "2024-03-26", "School", 1500.50, "UOFT")
     add_transaction(1, "2024-03-27", "House", 200.00, "Home supplies")
     add_transaction(1, "2024-03-28", "Entertainment", 50.00, "Movie tickets")
     add_transaction(1, "2024-03-29", "School", 25.00, "Textbook purchase")

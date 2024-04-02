@@ -3,7 +3,7 @@ from tkinter import ttk
 from database import get_account_summary, get_recent_transactions
 from budget import BudgetWindow
 import matplotlib.pyplot as plt
-import os
+import sys
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Dashboard(tk.Frame):
@@ -40,12 +40,7 @@ class Dashboard(tk.Frame):
     def logout(self):
         # Close the current window
         self.master.destroy()
-        # Get the directory path of the current file
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        # Join the current directory path with the target file path
-        absolute_filepath = os.path.join(current_directory, 'main.py')
-        # Execute the Python script
-        os.system(f'python3 "{absolute_filepath}"')
+        sys.exit()
 
     def create_dashboard_tab(self, notebook):
         dashboard_tab = tk.Frame(notebook)
