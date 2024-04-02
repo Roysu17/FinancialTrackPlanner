@@ -144,7 +144,7 @@ setup_database()
 
 if __name__ == "__main__":
     #Example Usage (Uncomment to test)
-    add_user("1", "1")
+    add_user("user", "password")
     #print(verify_user("user", "password"))
     add_transaction(1, "2024-03-26", "Food", 15.50, "Lunch at Subway")
     add_transaction(1, "2024-03-26", "School", 1500.50, "UOFT")
