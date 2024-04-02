@@ -1,99 +1,71 @@
 import tkinter as tk
-from tkinter import ttk
-from database import get_account_summary, get_recent_transactions
-from budget import BudgetWindow
+from tkinter import ttk, Menu
+from database import get_account_summary, get_recent_transactions  # Assuming these functions exist
 import os
-
 class Dashboard(tk.Frame):
     def __init__(self, parent, user_id, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.user_id = user_id  # Store the user_id for database queries
-    
-        self.setup_ui()
 
-    def setup_ui(self):
-        self.pack(fill="both", expand=True)
-        self.create_notebook()
+        # Set up the layout into rows and columns
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=2)
 
-    def create_notebook(self):
-        notebook = ttk.Notebook(self)
+        # Welcome label
+        self.lbl_welcome = tk.Label(self, text="Welcome to Your Dashboard", font=("Arial", 16))
+        self.lbl_welcome.grid(row=0, column=0, columnspan=2, pady=10)
 
-        
-        self.create_dashboard_tab(notebook)
-        self.create_transactions_tab(notebook)
-        self.create_budget_tab(notebook)
-        self.create_report_tab(notebook)
-        self.create_logout_tab(notebook)
+        # Left column for summaries
+        self.setup_summary_section()
 
-        notebook.pack(fill="both", expand=True, padx=10, pady=10)
-    
-    def create_logout_tab(self, notebook):
-        logout_tab = tk.Frame(notebook)
-        notebook.add(logout_tab, text="Logout")
+        # Right column for graphs or more detailed info
+        self.setup_details_section()
+        self.setup_menu()
 
-        # Add logout button to the Logout tab
-        logout_button = tk.Button(logout_tab, text="Logout", command=self.logout)
-        logout_button.pack(pady=20)
+    def setup_menu(self):
+        menubar = Menu(self.master)
+        self.master.config(menu=menubar)
 
-    def logout(self):
-        # Close the current window
+        # Adding menu items directly to the menubar
+        menubar.add_command(label="Sign Out", command=lambda: self.navigate_to('main.py'))
+        menubar.add_command(label="Dashboard", command=lambda: self.navigate_to('dashboard.py'))
+        menubar.add_command(label="Transaction", command=lambda: self.navigate_to('transactions.py'))
+        menubar.add_command(label="Budget", command=lambda: self.navigate_to('budget.py'))
+        menubar.add_command(label="Report", command=lambda: self.navigate_to('report.py'))
+
+    def navigate_to(self, filepath):
+        # Close the current window and open the target Python file
         self.master.destroy()
-        # Get the directory path of the current file
-        current_directory = os.path.dirname(os.path.abspath(__file__))
-        # Join the current directory path with the target file path
-        absolute_filepath = os.path.join(current_directory, 'main.py')
-        # Execute the Python script
-        os.system(f'python3 "{absolute_filepath}"')
+        os.system(f'python {filepath} {self.user_id}')
 
-    def create_dashboard_tab(self, notebook):
-        dashboard_tab = tk.Frame(notebook)
-        notebook.add(dashboard_tab, text="Dashboard")
-
-        summary_frame = tk.Frame(dashboard_tab)
-        summary_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+    def setup_summary_section(self):
+        # Summary frame
+        summary_frame = tk.Frame(self, borderwidth=2, relief="groove")
+        summary_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
         tk.Label(summary_frame, text="Account Summary", font=("Arial", 14)).pack(pady=10)
 
+        # Fetch and display the account summary for the user
         account_summary = get_account_summary(self.user_id)
         for account_type, amount in account_summary.items():
             tk.Label(summary_frame, text=f"{account_type}: ${amount}").pack()
 
-        details_frame = tk.Frame(dashboard_tab)
-        details_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
+    def setup_details_section(self):
+        # Detail frame for showing graphs or detailed transactions
+        details_frame = tk.Frame(self, borderwidth=2, relief="groove")
+        details_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 
         tk.Label(details_frame, text="Recent Transactions", font=("Arial", 14)).pack(pady=10)
 
+        # Fetch and display recent transactions for the user
         transactions = get_recent_transactions(self.user_id)
         for transaction in transactions:
             tk.Label(details_frame, text=f"{transaction['date']} - {transaction['category']}: ${transaction['cost']} - {transaction['details']}").pack()
-
-    def create_transactions_tab(self, notebook):
-        transactions_tab = tk.Frame(notebook)
-        notebook.add(transactions_tab, text="Transactions")
-
-        # Implementation for the Transactions tab
-        tk.Label(transactions_tab, text="Transactions Tab Content").pack(pady=20)
-
-    def create_budget_tab(self, notebook):
-        budget_tab = tk.Frame(notebook)
-        notebook.add(budget_tab, text="Budget")
-
-        budget_frame = BudgetWindow(budget_tab, self.user_id)
-        budget_frame.pack(fill="both", expand=True)
-
-    def create_report_tab(self, notebook):
-        report_tab = tk.Frame(notebook)
-        notebook.add(report_tab, text="Report")
-
-        # Implementation for the Report tab
-        tk.Label(report_tab, text="Report Tab Content").pack(pady=20)
-
 
 # The following code is for testing purposes
 if __name__ == "__main__":
     root = tk.Tk()
     root.geometry("800x600")
-    # Receive user id
     # Pass a dummy user_id for testing
-    Dashboard(root, 'dummy_user_id')
+    Dashboard(root, 'dummy_user_id').pack(fill="both", expand=True)
     root.mainloop()

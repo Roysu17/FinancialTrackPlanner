@@ -2,6 +2,7 @@ import tkinter as tk
 from login import LoginWindow
 from dashboard import Dashboard
 from database import get_account_summary
+from transactions import TransactionManager
 
 class MainApp(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -31,6 +32,15 @@ class MainApp(tk.Tk):
 
         dashboard = Dashboard(self, self.user_id)
         dashboard.pack()
+
+
+    def show_transaction_manager(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+
+        transaction_manager = TransactionManager(self, self.user_id)
+        transaction_manager.pack()
+
 
 def main():
     app = MainApp()

@@ -139,12 +139,11 @@ setup_database()
 
 if __name__ == "__main__":
     #Example Usage (Uncomment to test)
-    #add_user("user", "password")
-    #print(verify_user("user", "password"))
-    #add_transaction(1, "2024-03-26", "FOOD", 15.50, "Lunch at Subway")
-    add_transaction(1, "2024-03-26", "SCHOOL", 1500.50, "UOFT")
+    add_user("user", "password")
+    print(verify_user("user", "password"))
+    add_transaction(1, "2024-03-26", "FOOD", 15.50, "Lunch at Subway")
     print(get_recent_transactions(1))
-    
+
 
 
 """
