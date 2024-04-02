@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 from database import get_account_summary, get_recent_transactions
 from budget import BudgetWindow
+import matplotlib.pyplot as plt
 import os
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Dashboard(tk.Frame):
     def __init__(self, parent, user_id, *args, **kwargs):
@@ -55,8 +57,12 @@ class Dashboard(tk.Frame):
         tk.Label(summary_frame, text="Account Summary", font=("Arial", 14)).pack(pady=10)
 
         account_summary = get_account_summary(self.user_id)
-        for account_type, amount in account_summary.items():
-            tk.Label(summary_frame, text=f"{account_type}: ${amount}").pack()
+
+        fig, ax = plt.subplots(figsize=(4, 4))
+        ax.pie(account_summary.values(), labels=account_summary.keys(), autopct='%1.1f%%', startangle=180, textprops={'fontsize': 7})
+
+        chart1 = FigureCanvasTkAgg(fig, summary_frame)
+        chart1.get_tk_widget().pack()
 
         details_frame = tk.Frame(dashboard_tab)
         details_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
@@ -64,8 +70,12 @@ class Dashboard(tk.Frame):
         tk.Label(details_frame, text="Recent Transactions", font=("Arial", 14)).pack(pady=10)
 
         transactions = get_recent_transactions(self.user_id)
+        num = 0
         for transaction in transactions:
             tk.Label(details_frame, text=f"{transaction['date']} - {transaction['category']}: ${transaction['cost']} - {transaction['details']}").pack()
+            num += 1
+            if num == 10:
+                break
 
     def create_transactions_tab(self, notebook):
         transactions_tab = tk.Frame(notebook)
