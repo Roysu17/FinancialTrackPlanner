@@ -2,6 +2,7 @@
 import os
 import sqlite3
 import bcrypt
+import datetime
 
 # Determine the directory of this script
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -65,23 +66,57 @@ def verify_user(username, password):
     return False
 
 def add_transaction(user_id, date, category, cost, details):
-    """Add a new transaction to the database."""
+    """Add a new transaction to the database and return its id."""
     sql = "INSERT INTO transactions(user_id, date, category, cost, details) VALUES (?, ?, ?, ?, ?)"
     conn = create_connection()
     c = conn.cursor()
     c.execute(sql, (user_id, date, category, cost, details))
+    transaction_id = c.lastrowid  # Get the id of the last inserted row
     conn.commit()
     conn.close()
+    return transaction_id
+
 
 def get_transactions_by_user(user_id):
     """Retrieve all transactions for a given user."""
-    sql = "SELECT date, category, cost, details FROM transactions WHERE user_id = ?"
+    sql = "SELECT id, date, category, cost, details FROM transactions WHERE user_id = ?"
     conn = create_connection()
     c = conn.cursor()
     c.execute(sql, (user_id,))
     transactions = c.fetchall()
     conn.close()
     return transactions
+
+def get_monthly_summary(user_id):
+    """Retrieve monthly summary of expenses (excluding income) for a given user."""
+    # Get current year and month
+    current_year = datetime.datetime.now().year
+    current_month = datetime.datetime.now().month
+    
+    # Construct start and end dates of the current month
+    start_date = f"{current_year}-{current_month:02d}-01"
+    end_date = f"{current_year}-{current_month:02d}-31"  # Assuming all months have maximum 31 days
+    
+    # SQL query to retrieve transactions excluding income within the current month
+    sql = """
+    SELECT category, SUM(cost) AS total
+    FROM transactions
+    WHERE user_id = ? AND category != 'Income' AND date BETWEEN ? AND ?
+    GROUP BY category
+    """
+    
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id, start_date, end_date))
+    
+    summary = {}
+    for row in c.fetchall():
+        category, total = row
+        summary[category] = total
+    
+    conn.close()
+    return summary
+
 
 def get_account_summary(user_id):
     """Retrieve account summary for a given user."""
@@ -104,7 +139,7 @@ def get_account_summary(user_id):
 def get_recent_transactions(user_id, limit=10):
     """Retrieve recent transactions for a given user."""
     sql = """
-    SELECT date, category, cost, details
+    SELECT id, date, category, cost, details
     FROM transactions
     WHERE user_id = ?
     ORDER BY date DESC
@@ -115,8 +150,9 @@ def get_recent_transactions(user_id, limit=10):
     c.execute(sql, (user_id, limit))
     transactions = []
     for row in c.fetchall():
-        date, category, cost, details = row
+        transaction_id, date, category, cost, details = row
         transactions.append({
+            'id': transaction_id,
             'date': date,
             'category': category,
             'cost': cost,
@@ -137,6 +173,19 @@ def get_user_id(username):
         return user[0]  # Return the user ID
     else:
         return None  # Return None if the user does not exist
+
+def edit_transaction(user_id, transaction_id, date, category, cost, details):
+    """Edit an existing transaction in the database."""
+    sql = """
+    UPDATE transactions
+    SET date = ?, category = ?, cost = ?, details = ?
+    WHERE id = ? AND user_id = ?
+    """
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (date, category, cost, details, transaction_id, user_id))
+    conn.commit()
+    conn.close()
 
 
 # Ensure the database and tables are created at initial run

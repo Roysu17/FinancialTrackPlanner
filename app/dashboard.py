@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from database import get_account_summary, get_recent_transactions
+from database import get_monthly_summary, get_recent_transactions
 from budget import BudgetWindow
 import matplotlib.pyplot as plt
 import sys
@@ -16,6 +16,7 @@ class Dashboard(tk.Frame):
     def setup_ui(self):
         self.pack(fill="both", expand=True)
         self.create_notebook()
+        self.master.protocol("WM_DELETE_WINDOW", self.logout)
 
     def create_notebook(self):
         notebook = ttk.Notebook(self)
@@ -40,7 +41,8 @@ class Dashboard(tk.Frame):
     def logout(self):
         # Close the current window
         self.master.destroy()
-        sys.exit()
+        # Cleanly exit the application
+        self.master.quit()
 
     def create_dashboard_tab(self, notebook):
         dashboard_tab = tk.Frame(notebook)
@@ -51,7 +53,7 @@ class Dashboard(tk.Frame):
 
         tk.Label(summary_frame, text="Account Summary", font=("Arial", 14)).pack(pady=10)
 
-        account_summary = get_account_summary(self.user_id)
+        account_summary = get_monthly_summary(self.user_id)
 
         fig, ax = plt.subplots(figsize=(4, 4))
         ax.pie(account_summary.values(), labels=account_summary.keys(), autopct='%1.1f%%', startangle=180, textprops={'fontsize': 7})
@@ -100,5 +102,5 @@ if __name__ == "__main__":
     root.geometry("800x600")
     # Receive user id
     # Pass a dummy user_id for testing
-    Dashboard(root, 'dummy_user_id')
+    dashboard = Dashboard(root, '1')
     root.mainloop()
