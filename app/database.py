@@ -117,6 +117,36 @@ def get_monthly_summary(user_id):
     conn.close()
     return summary
 
+def get_last_month_summary(user_id):
+    """Retrieve summary of expenses (excluding income) for a given user for the last month."""
+    today = datetime.datetime.now()
+    first_day_of_current_month = datetime.datetime(today.year, today.month, 1)
+    last_day_of_last_month = first_day_of_current_month - datetime.timedelta(days=1)
+    first_day_of_last_month = datetime.datetime(last_day_of_last_month.year, last_day_of_last_month.month, 1)
+    
+    # Format dates in 'YYYY-MM-DD' format
+    start_date = first_day_of_last_month.strftime('%Y-%m-%d')
+    end_date = last_day_of_last_month.strftime('%Y-%m-%d')
+    
+    # SQL query to retrieve transactions excluding income within the last month
+    sql = """
+    SELECT category, SUM(cost) AS total
+    FROM transactions
+    WHERE user_id = ? AND category != 'Income' AND date BETWEEN ? AND ?
+    GROUP BY category
+    """
+    
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id, start_date, end_date))
+    
+    summary = {}
+    for row in c.fetchall():
+        category, total = row
+        summary[category] = total
+    
+    conn.close()
+    return summary
 
 def get_account_summary(user_id):
     """Retrieve account summary for a given user."""
