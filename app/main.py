@@ -34,12 +34,6 @@ class MainApp(tk.Tk):
         dashboard.pack()
 
 
-    def show_transaction_manager(self):
-        for widget in self.winfo_children():
-            widget.destroy()
-
-        transaction_manager = TransactionManager(self, self.user_id)
-        transaction_manager.pack()
 
 
 def main():

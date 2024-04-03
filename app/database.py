@@ -292,6 +292,66 @@ def edit_transaction(user_id, transaction_id, date, category, cost, details):
     conn.commit()
     conn.close()
 
+def get_current_month_expense_total(user_id):
+    """Retrieve the total expense for the current month (excluding income) for a given user."""
+    # Get the first and last day of the current month
+    today = datetime.datetime.now()
+    first_day_of_this_month = datetime.datetime(today.year, today.month, 1)
+    next_month = first_day_of_this_month + datetime.timedelta(days=31)  # Move to next month
+    first_day_of_next_month = datetime.datetime(next_month.year, next_month.month, 1)
+    last_day_of_this_month = first_day_of_next_month - datetime.timedelta(days=1)
+    
+    # Format dates in 'YYYY-MM-DD' format
+    start_date = first_day_of_this_month.strftime('%Y-%m-%d')
+    end_date = last_day_of_this_month.strftime('%Y-%m-%d')
+    
+    # SQL query to calculate the total expense for the current month, excluding income
+    sql = """
+    SELECT SUM(cost)
+    FROM transactions
+    WHERE user_id = ? AND category != 'Income' AND date BETWEEN ? AND ?
+    """
+    
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id, start_date, end_date))
+    
+    # Fetch the result and handle the case where there are no expenses
+    result = c.fetchone()
+    total_expense = result[0] if result[0] is not None else 0
+    
+    conn.close()
+    return total_expense
+
+def get_last_month_expense_total(user_id):
+    """Retrieve the total expense for the last month (excluding income) for a given user."""
+    today = datetime.datetime.now()
+    first_day_of_current_month = datetime.datetime(today.year, today.month, 1)
+    last_day_of_last_month = first_day_of_current_month - datetime.timedelta(days=1)
+    first_day_of_last_month = datetime.datetime(last_day_of_last_month.year, last_day_of_last_month.month, 1)
+    
+    # Format dates in 'YYYY-MM-DD' format
+    start_date = first_day_of_last_month.strftime('%Y-%m-%d')
+    end_date = last_day_of_last_month.strftime('%Y-%m-%d')
+    
+    # SQL query to calculate the total expense for the last month, excluding income
+    sql = """
+    SELECT SUM(cost)
+    FROM transactions
+    WHERE user_id = ? AND category != 'Income' AND date BETWEEN ? AND ?
+    """
+    
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id, start_date, end_date))
+    
+    # Fetch the result and handle the case where there are no expenses
+    result = c.fetchone()
+    total_expense = result[0] if result[0] is not None else 0
+    
+    conn.close()
+    return total_expense
+
 
 # Ensure the database and tables are created at initial run
 setup_database()
