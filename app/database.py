@@ -353,14 +353,75 @@ def get_last_month_expense_total(user_id):
     return total_expense
 
 
+def get_last_month_income_total(user_id):
+    """Retrieve the total income for the last month (excluding expense) for a given user."""
+    today = datetime.datetime.now()
+    first_day_of_current_month = datetime.datetime(today.year, today.month, 1)
+    last_day_of_last_month = first_day_of_current_month - datetime.timedelta(days=1)
+    first_day_of_last_month = datetime.datetime(last_day_of_last_month.year, last_day_of_last_month.month, 1)
+
+    # Format dates in 'YYYY-MM-DD' format
+    start_date = first_day_of_last_month.strftime('%Y-%m-%d')
+    end_date = last_day_of_last_month.strftime('%Y-%m-%d')
+
+    # SQL query to calculate the total income for the last month, excluding expense
+    sql = """
+    SELECT SUM(cost)
+    FROM transactions
+    WHERE user_id = ? AND category = 'Income' AND date BETWEEN ? AND ?
+    """
+
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id, start_date, end_date))
+
+    # Fetch the result and handle the case where there are no income
+    result = c.fetchone()
+    total_income = result[0] if result[0] is not None else 0
+
+    conn.close()
+    return total_income
+
+
+def get_current_month_income_total(user_id):
+    """Retrieve the total income for the current month (excluding expense) for a given user."""
+    # Get the first and last day of the current month
+    today = datetime.datetime.now()
+    first_day_of_this_month = datetime.datetime(today.year, today.month, 1)
+    next_month = first_day_of_this_month + datetime.timedelta(days=31)  # Move to next month
+    first_day_of_next_month = datetime.datetime(next_month.year, next_month.month, 1)
+    last_day_of_this_month = first_day_of_next_month - datetime.timedelta(days=1)
+
+    # Format dates in 'YYYY-MM-DD' format
+    start_date = first_day_of_this_month.strftime('%Y-%m-%d')
+    end_date = last_day_of_this_month.strftime('%Y-%m-%d')
+
+    # SQL query to calculate the total income for the current month, excluding expense
+    sql = """
+    SELECT SUM(cost)
+    FROM transactions
+    WHERE user_id = ? AND category = 'Income' AND date BETWEEN ? AND ?
+    """
+
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (user_id, start_date, end_date))
+
+    # Fetch the result and handle the case where there are no incomes
+    result = c.fetchone()
+    total_expense = result[0] if result[0] is not None else 0
+
+    conn.close()
+    return total_expense
+
 # Ensure the database and tables are created at initial run
 setup_database()
 
 if __name__ == "__main__":
     # Example Usage (Uncomment to test)
-    #add_user("user", "password")
+    add_user("user", "password")
     # print(verify_user("user", "password"))
-    """ add_transaction(1, "2024-03-26", "Food", 15.50, "Lunch at Subway")
+    add_transaction(1, "2024-03-26", "Food", 15.50, "Lunch at Subway")
     add_transaction(1, "2024-03-26", "School", 1500.50, "UOFT")
     add_transaction(1, "2024-03-27", "House", 200.00, "Home supplies")
     add_transaction(1, "2024-03-28", "Entertainment", 50.00, "Movie tickets")
@@ -372,7 +433,7 @@ if __name__ == "__main__":
     add_transaction(1, "2024-04-03", "Entertainment", 20.00, "Concert tickets")
     add_transaction(1, "2024-04-04", "House", 100.00, "Cleaning supplies")
     add_transaction(1, "2024-04-05", "Car", 50.00, "Car maintenance")
-    add_transaction(1, "2024-04-30", "Income", 4500.00, "Salary")"""
+    add_transaction(1, "2024-04-30", "Income", 4500.00, "Salary")
 
     print(get_recent_transactions(1))
     print(get_last_month_income_summary(1))
