@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from database import get_monthly_summary, get_recent_transactions
 from budget import BudgetWindow
+from reports import ReportWindow
 import matplotlib.pyplot as plt
 import sys
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -54,6 +55,7 @@ class Dashboard(tk.Frame):
         tk.Label(summary_frame, text="Account Summary", font=("Arial", 14)).pack(pady=10)
 
         account_summary = get_monthly_summary(self.user_id)
+        print(account_summary)
 
         fig, ax = plt.subplots(figsize=(4, 4))
         ax.pie(account_summary.values(), labels=account_summary.keys(), autopct='%1.1f%%', startangle=180, textprops={'fontsize': 7})
@@ -92,8 +94,9 @@ class Dashboard(tk.Frame):
         report_tab = tk.Frame(notebook)
         notebook.add(report_tab, text="Report")
 
+        report_frame = ReportWindow(report_tab, self.user_id)
         # Implementation for the Report tab
-        tk.Label(report_tab, text="Report Tab Content").pack(pady=20)
+        report_frame.pack(fill="both", expand=True)
 
 
 # The following code is for testing purposes

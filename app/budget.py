@@ -39,7 +39,7 @@ class BudgetWindow(tk.Frame):
             self.transactions_text.insert(tk.END, f"{transaction}\n")
 
 def main():
-    user_id = "your_user_id_here"  # Assuming you have a way to get the user ID
+    user_id = "1"  # Assuming you have a way to get the user ID
     root = tk.Tk()
     app = BudgetWindow(root, user_id)
     app.pack()
