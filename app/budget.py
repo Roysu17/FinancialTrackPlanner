@@ -1,49 +1,71 @@
-# Budget planning and tracking
 import tkinter as tk
-from tkinter import ttk, Menu
-from database import get_account_summary, get_recent_transactions  # Assuming these functions exist
-import os
+from tkinter import ttk
+from database import (
+    get_monthly_summary,
+    get_last_month_summary,
+    get_this_month_income_summary,
+    get_last_month_income_summary
+)
 
-class BudgetWindow(tk.Frame):
-    def __init__(self, parent, user_id):
-        super().__init__(parent)
-        self.parent = parent
+
+class BudgetWindow:
+    def __init__(self, root, user_id):
+        self.root = root
         self.user_id = user_id
-        self.initialize_ui()
 
-    def initialize_ui(self):
-        self.create_widgets()
-        self.load_data()
+        # Initialize variables for data
+        self.current_month = tk.StringVar()
+        self.income = tk.DoubleVar()
+        self.expense = tk.DoubleVar()
 
-    def create_widgets(self):
-        # Account summary
-        self.summary_label = ttk.Label(self, text="Account Summary")
-        self.summary_label.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        self.summary_text = tk.Text(self, height=10, width=50)
-        self.summary_text.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        # Create main frame
+        main_frame = ttk.Frame(root, padding="20")
+        main_frame.grid(row=0, column=0, sticky='wens')
 
-        # Recent transactions
-        self.transactions_label = ttk.Label(self, text="Recent Transactions")
-        self.transactions_label.grid(row=2, column=0, padx=10, pady=10, sticky="w")
-        self.transactions_text = tk.Text(self, height=10, width=50)
-        self.transactions_text.grid(row=3, column=0, padx=10, pady=5, sticky="w")
+        # Month section
+        month_label = ttk.Label(main_frame, text="Month:")
+        month_label.grid(row=0, column=0, sticky=tk.W)
+        self.month = ttk.Label(main_frame, textvariable=self.current_month)
+        self.month.grid(row=0, column=1, sticky=tk.W)
 
-    def load_data(self):
-        # Load account summary
-        account_summary = get_account_summary(self.user_id)
-        self.summary_text.insert(tk.END, account_summary)
+        # Income section
+        income_label = ttk.Label(main_frame, text="Income:")
+        income_label.grid(row=1, column=0, sticky=tk.W)
+        self.income = ttk.Label(main_frame, textvariable=self.income)
+        self.income.grid(row=1, column=1, sticky=tk.W)
 
-        # Load recent transactions
-        recent_transactions = get_recent_transactions(self.user_id)
-        for transaction in recent_transactions:
-            self.transactions_text.insert(tk.END, f"{transaction}\n")
+        # Expense section
+        expense_label = ttk.Label(main_frame, text="Expense:")
+        expense_label.grid(row=2, column=0, sticky=tk.W)
+        self.expense = ttk.Label(main_frame, textvariable=self.expense)
+        self.expense.grid(row=2, column=1, sticky=tk.W)
+
+        # Label box section
+        label_box = ttk.Label(main_frame, text="Comparison Label:")
+        label_box.grid(row=0, column=2, rowspan=3, sticky='wens')
+
+        # Populate data
+        self.populate_data()
+
+    def populate_data(self):
+        # Fetch data from the database
+        # Here, you would call your database functions to populate the data
+        this_month_expense = get_monthly_summary(self.user_id)
+        last_month_expense = get_last_month_summary(self.user_id)
+        this_month_income_summary = get_this_month_income_summary(self.user_id)
+        last_month_income_summary = get_last_month_income_summary(self.user_id)
+
+        for each in this_month_expense:
+            print(each)
+
+
 
 def main():
     user_id = "1"  # Assuming you have a way to get the user ID
     root = tk.Tk()
     app = BudgetWindow(root, user_id)
-    app.pack()
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()
