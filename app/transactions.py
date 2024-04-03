@@ -65,7 +65,7 @@ class TransactionManager(tk.Frame):
         for transaction_data in transactions_data:
             transaction = Transaction(*transaction_data)  # Creating Transaction objects
             self.transactions.push(transaction)
-
+            
         self.show_transactions()
 
     # Show transactions method
@@ -73,7 +73,7 @@ class TransactionManager(tk.Frame):
         self.record_box = []
         self.record_text = []
 
-        for index, transaction in enumerate(self.transactions):
+        for index, transaction in enumerate(self.transactions.items):
             record_text = tk.StringVar(value=transaction.format_info())
             self.record_text.append(record_text)
 

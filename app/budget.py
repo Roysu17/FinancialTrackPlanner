@@ -41,16 +41,22 @@ class BudgetWindow(tk.Frame):
         last_month = last_month_date.strftime("%B %Y")
 
         # Calculating the percentage of income used compared to expenses
-        current_month_percentage = (current_month_expense / this_month_income_summary) * 100
-        last_month_percentage = (last_month_expense / last_month_income_summary) * 100
+        if this_month_income_summary == 0:
+            current_month_percentage = -1
+        else:
+            current_month_percentage = (current_month_expense / this_month_income_summary) * 100
+        if last_month_income_summary == 0:
+            last_month_percentage = -1
+        else:
+            last_month_percentage = (last_month_expense / last_month_income_summary) * 100
 
         # UI Components
-        self.create_label(row=0, column=0, text=f'Month: {current_month}')
+        self.create_label(row=0, column=0, text=f'{current_month}')
         self.create_label(row=1, column=0, text=f'Monthly income: {this_month_income_summary}')
         self.create_label(row=2, column=0, text=f'Monthly expense: {current_month_expense}')
         self.create_comparison_label(row=0, column=2, percentage=current_month_percentage)
 
-        self.create_label(row=6, column=0, text=f'Month: {last_month}')
+        self.create_label(row=6, column=0, text=f'{last_month}')
         self.create_label(row=7, column=0, text=f'Monthly income: {last_month_income_summary}')
         self.create_label(row=8, column=0, text=f'Monthly expense: {last_month_expense}')
         self.create_comparison_label(row=7, column=2, percentage=last_month_percentage)
@@ -80,10 +86,12 @@ class BudgetWindow(tk.Frame):
                    "This indicates a healthy financial situation where you're effectively \n" \
                    "managing your expenses. Continue monitoring your budget to ensure " \
                    "sustainable financial habits."
-        else:
+        elif 0 <= percentage < 50:
             text = "Your expenses are below 50% of your income for this period, maintaining \n" \
                    "a healthy balance. It's commendable that you're living within your means \n" \
                    "and allocating your income wisely. Keep up the good work!"
+        else:
+            text = "No data available"
 
         self.create_label(row=row, column=column, text=text, rowspan=3, columnspan=3, sticky=tk.E)
 

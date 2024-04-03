@@ -435,9 +435,9 @@ if __name__ == "__main__":
     add_transaction(1, "2024-04-05", "Car", 50.00, "Car maintenance")
     add_transaction(1, "2024-04-30", "Income", 4500.00, "Salary")
 
-    print(get_recent_transactions(1))
-    print(get_last_month_income_summary(1))
-    print(get_this_month_income_summary(1))
+    #print(get_recent_transactions(1))
+    #print(get_last_month_income_summary(1))
+    #print(get_this_month_income_summary(1))
 
 """
 CREATE TABLE IF NOT EXISTS users (
