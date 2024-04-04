@@ -4,6 +4,8 @@ This guide provides instructions on how to use the Personal Finance Tracker appl
 
 ## Logging In
 
+DEMO data is located with username of User and password of password
+
 1. Open where Personal Finance Tracker application is located, run the main.py in app folder.
 2. You will be presented with the login page. Enter your username and password to log in to your account.
 3. If you are a new user, click on the "Create Account" to create a new account.
