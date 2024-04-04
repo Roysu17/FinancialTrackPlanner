@@ -180,7 +180,7 @@ class TransactionManager(tk.Frame):
         self.category_label = tk.Label(self.info_input, text="Category: ")
         self.category_label.grid(row=1, column=0, pady=obj_pady)
 
-        self.category_options = ['', 'FOOD', 'HOUSE', 'ENTERTAINMENT', 'SCHOOL', 'INCOME', 'CAR', 'OTHER']
+        self.category_options = ['', 'Food', 'House', 'Entertainment', 'School', 'Income', 'Car', 'Other']
         self.category_text = tk.StringVar()
         self.category_text.set("")
         self.category_box = tk.OptionMenu(self.info_input, self.category_text, *self.category_options)

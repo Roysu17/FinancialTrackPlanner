@@ -78,14 +78,14 @@ class Dashboard(tk.Frame):
             num += 1
             if num == 10:
                 break
-
+    
+                
     def create_transactions_tab(self, notebook):
         transactions_tab = tk.Frame(notebook)
         notebook.add(transactions_tab, text="Transactions")
 
         transactions_frame = TransactionManager(transactions_tab, self.user_id, self.onUpdate)
         transactions_frame.pack(fill="both", expand=True)
-        
 
 
     def create_budget_tab(self, notebook):
