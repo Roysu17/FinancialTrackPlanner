@@ -32,9 +32,9 @@
 
 ### Week 2
 
-- **Days 6-7**: Continue development - Sean moves to `dashboard.py`, Adam continues on `transactions.py` and starts `budget.py`, Roy supports database integration.
+- **Days 6-7**: Continue development - Sean moves to `dashboard.py`, Adam continues on `transactions.py`, Roy supports database integration.
 - **Days 8-9**: Initial integration - Begin integrating the developed parts, identify any major issues.
-- **Days 10-11**: Development on remaining components – Roy and Adam move to `reports.py`, Sean and Adam polish UI/UX, Roy focuses on any remaining database issues and starts on final testing preparations.
+- **Days 10-11**: Development on remaining components – Roy and Sean move to `reports.py` and `budget.py`, Sean and Roy polish UI/UX, Roy focuses on any remaining database issues and starts on final testing preparations.
 - **Day 12**: Testing - Everyone tests their components, identifying bugs.
 - **Day 13**: Debugging and documentation - Fix identified bugs, and everyone contributes to the documentation.
 - **Day 14**: Final review and submission - Final integration testing, review documentation, and submit the project.

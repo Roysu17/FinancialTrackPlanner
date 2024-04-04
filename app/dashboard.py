@@ -3,6 +3,7 @@ from tkinter import ttk
 from database import get_monthly_summary, get_recent_transactions
 from budget import BudgetWindow
 from reports import ReportWindow
+from transactions import TransactionManager
 import matplotlib.pyplot as plt
 import sys
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -11,7 +12,7 @@ class Dashboard(tk.Frame):
     def __init__(self, parent, user_id, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)
         self.user_id = user_id  # Store the user_id for database queries
-    
+
         self.setup_ui()
 
     def setup_ui(self):
@@ -22,7 +23,7 @@ class Dashboard(tk.Frame):
     def create_notebook(self):
         notebook = ttk.Notebook(self)
 
-        
+
         self.create_dashboard_tab(notebook)
         self.create_transactions_tab(notebook)
         self.create_budget_tab(notebook)
@@ -30,7 +31,7 @@ class Dashboard(tk.Frame):
         self.create_logout_tab(notebook)
 
         notebook.pack(fill="both", expand=True, padx=10, pady=10)
-    
+
     def create_logout_tab(self, notebook):
         logout_tab = tk.Frame(notebook)
         notebook.add(logout_tab, text="Logout")
@@ -80,8 +81,9 @@ class Dashboard(tk.Frame):
         transactions_tab = tk.Frame(notebook)
         notebook.add(transactions_tab, text="Transactions")
 
-        # Implementation for the Transactions tab
-        tk.Label(transactions_tab, text="Transactions Tab Content").pack(pady=20)
+        transactions_frame = TransactionManager(transactions_tab, self.user_id)
+        transactions_frame.pack(fill="both", expand=True)
+
 
     def create_budget_tab(self, notebook):
         budget_tab = tk.Frame(notebook)
