@@ -24,13 +24,12 @@ class TransactionManager(tk.Frame):
         self.info_display_header.grid(row=1, column=0, columnspan=4, sticky="NESW", padx=10)
 
         # Canvas to hold the transactions
-        self.info_display_canvas = tk.Canvas(self)
+        self.info_display_canvas = tk.Canvas(self, width=430)  # Adjust width as needed
         self.info_display_canvas.grid(row=2, column=0, columnspan=3, pady=10, sticky="NESW")
 
         # Frame to hold the transactions inside the canvas
         self.info_display = tk.Frame(self.info_display_canvas)
         self.info_display_canvas.create_window((0, 0), window=self.info_display, anchor="nw")
-
 
         self.scrollbar = tk.Scrollbar(self, orient="vertical", command=self.info_display_canvas.yview)
         self.scrollbar.grid(row=2, column=3, sticky="NS")
@@ -47,6 +46,7 @@ class TransactionManager(tk.Frame):
 
         self.fill_records()
         self.setup_info()
+
 
 
     def fill_records(self):
@@ -89,8 +89,8 @@ class TransactionManager(tk.Frame):
             self.record_button_text.append(edit_button_text)
             self.record_box.append((record_label, edit_button))
 
-            self.info_display.config(width=318)
-            self.info_display_canvas.config(width=318)
+            #self.info_display.config(width=318)
+            #self.info_display_canvas.config(width=318)
 
 
     # Populate edit fields method

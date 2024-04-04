@@ -8,7 +8,7 @@ class MainApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title("Personal Finance Tracker")
-        self.geometry("800x600")
+        self.geometry("1000x600")
         self.user_id = None  # Store the user ID
 
         self.show_login_screen()
