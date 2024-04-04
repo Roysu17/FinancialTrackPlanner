@@ -26,6 +26,11 @@ class BudgetWindow(tk.Frame):
             self.columnconfigure(col, weight=1)
         for row in range(9):
             self.rowconfigure(row, weight=1)
+    
+    def update(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.init_ui()
 
     def populate_data(self):
         # Data retrieval

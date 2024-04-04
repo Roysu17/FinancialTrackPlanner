@@ -6,12 +6,18 @@ import tkinter as tk
 
 from database import get_transactions_by_user, add_transaction, edit_transaction, delete_transaction
 
+def updateable(func):
+    def in_func(self, *args, **kwargs):
+        func(self, *args, **kwargs)
+        self.onUpdate()
+    return in_func
 
 class TransactionManager(tk.Frame):
 
-    def __init__(self, parent, user_id):
+    def __init__(self, parent, user_id, onUpdate):
         super().__init__(parent)
         self.parent = parent
+        self.onUpdate = onUpdate
 
         # Store user_id for database queries
         self.user_id = user_id
@@ -104,7 +110,6 @@ class TransactionManager(tk.Frame):
             # Store the widgets
             self.record_button_text.append(edit_button_text)
             self.record_box.append((record_label, edit_button))
-
 
     def edit_fields(self, index):
         # If we are editing a transaction and we click its corresponding button for the second time
@@ -214,7 +219,7 @@ class TransactionManager(tk.Frame):
         self.delete_transaction_button.grid(row=7, column=0, columnspan=2, pady=obj_pady + 10, padx=10)
         self.delete_transaction_button.config(state="disabled")
 
-
+    @updateable
     def delete_transaction(self):
         # Remove the transaction from the database
         delete_transaction(self.editing_transaction_id)
@@ -246,7 +251,7 @@ class TransactionManager(tk.Frame):
             self.record_box[ind][0].config(relief="raised")
             self.record_box[ind][1].config(bg=self.button_color_default)
 
-
+    @updateable
     def validate_transaction(self):
 
         # If we are missing a cost, send an error message

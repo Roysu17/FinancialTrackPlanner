@@ -25,10 +25,12 @@ class Dashboard(tk.Frame):
 
 
         self.create_dashboard_tab(notebook)
-        self.create_transactions_tab(notebook)
-        self.create_budget_tab(notebook)
         self.create_report_tab(notebook)
+        self.create_budget_tab(notebook)
+        
         self.create_logout_tab(notebook)
+        self.create_transactions_tab(notebook)
+        
 
         notebook.pack(fill="both", expand=True, padx=10, pady=10)
 
@@ -81,8 +83,9 @@ class Dashboard(tk.Frame):
         transactions_tab = tk.Frame(notebook)
         notebook.add(transactions_tab, text="Transactions")
 
-        transactions_frame = TransactionManager(transactions_tab, self.user_id)
+        transactions_frame = TransactionManager(transactions_tab, self.user_id, self.onUpdate)
         transactions_frame.pack(fill="both", expand=True)
+        
 
 
     def create_budget_tab(self, notebook):
@@ -90,6 +93,7 @@ class Dashboard(tk.Frame):
         notebook.add(budget_tab, text="Budget")
 
         budget_frame = BudgetWindow(budget_tab, self.user_id)
+        #self.onUpdate = budget_frame.update
         budget_frame.pack(fill="both", expand=True)
 
     def create_report_tab(self, notebook):
@@ -97,6 +101,7 @@ class Dashboard(tk.Frame):
         notebook.add(report_tab, text="Report")
 
         report_frame = ReportWindow(report_tab, self.user_id)
+        self.onUpdate = report_frame.update
         # Implementation for the Report tab
         report_frame.pack(fill="both", expand=True)
 

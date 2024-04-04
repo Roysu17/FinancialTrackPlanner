@@ -25,6 +25,11 @@ class ReportWindow(tk.Frame):
         # Recent transactions
         self.transactions_label = ttk.Label(self, text="Last month transaction")
         self.transactions_label.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
+    
+    def update(self):
+        for widget in self.winfo_children():
+            widget.destroy()
+        self.initialize_ui()
 
     def load_data(self):
         # Account summary for last month

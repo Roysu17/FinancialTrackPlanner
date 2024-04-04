@@ -28,9 +28,6 @@ class MainApp(tk.Tk):
         for widget in self.winfo_children():
             widget.destroy()
 
-        # Retrieve account summary for the logged-in user, bypassed as of now
-        #account_summary = get_account_summary(self.user_id)
-
         dashboard = Dashboard(self, self.user_id)
         dashboard.pack()
 
