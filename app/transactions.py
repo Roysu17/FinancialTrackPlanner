@@ -2,12 +2,7 @@
 
 import datetime
 import tkinter as tk
-from database import get_transactions_by_user, add_transaction, add_user, verify_user, edit_transaction
-
-
-# TODO: fix scrollbar for display
-# TODO: add option to delete
-# TODO: click on button to put details in infoinput for editing
+from database import get_transactions_by_user, add_transaction, edit_transaction, delete_transaction
 
 
 class TransactionManager(tk.Frame):
@@ -17,12 +12,8 @@ class TransactionManager(tk.Frame):
         self.parent = parent
         self.user_id = user_id  # Store the user_id for database queries
         self.editing_transaction_id = None
-
-        # Set up the layout into rows and columns
-        # self.grid_columnconfigure(0, weight=1)
-        # self.grid_columnconfigure(1, weight=2)
-
-        self.record_selection = None
+        self.editing_index = None
+        self.edit_mode = False
 
         # Welcome label
         self.font = "Arial"
@@ -30,7 +21,7 @@ class TransactionManager(tk.Frame):
         self.lbl_welcome.grid(row=0, column=0, columnspan=2, pady=10, padx=10)
 
         self.info_display_header = tk.Label(self, text="Your Previous Transactions", font=(self.font, 12, "bold"))
-        self.info_display_header.grid(row=1, column=0, columnspan=3, sticky="NESW")
+        self.info_display_header.grid(row=1, column=0, columnspan=4, sticky="NESW", padx=10)
 
         # Canvas to hold the transactions
         self.info_display_canvas = tk.Canvas(self)
@@ -40,6 +31,7 @@ class TransactionManager(tk.Frame):
         self.info_display = tk.Frame(self.info_display_canvas)
         self.info_display_canvas.create_window((0, 0), window=self.info_display, anchor="nw")
 
+
         self.scrollbar = tk.Scrollbar(self, orient="vertical", command=self.info_display_canvas.yview)
         self.scrollbar.grid(row=2, column=3, sticky="NS")
         self.info_display_canvas.configure(yscrollcommand=self.scrollbar.set)
@@ -48,14 +40,13 @@ class TransactionManager(tk.Frame):
         self.info_display.bind("<Configure>", lambda e: self.info_display_canvas.configure(scrollregion=self.info_display_canvas.bbox("all")))
 
         self.info_input_header = tk.Label(self, text="Enter or Edit A Transaction", font=(self.font, 12, "bold"))
-        self.info_input_header.grid(row=1, column=4, pady=10, padx=30, sticky="NESW")
+        self.info_input_header.grid(row=1, column=4, pady=10, padx=100, sticky="NESW")
 
         self.info_input = tk.Frame(self)
-        self.info_input.grid(row=2, column=4, pady=10, padx=30, sticky="NESW")
+        self.info_input.grid(row=2, column=4, pady=10, padx=100, sticky="NESW")
 
         self.fill_records()
         self.setup_info()
-
 
 
     def fill_records(self):
@@ -63,15 +54,22 @@ class TransactionManager(tk.Frame):
         transactions_data = get_transactions_by_user(self.user_id)
         self.transactions = Stack()
         for transaction_data in transactions_data:
-            transaction = Transaction(*transaction_data)  # Creating Transaction objects
+            transaction = Transaction(transaction_data[0], transaction_data[1], transaction_data[2], transaction_data[3], transaction_data[4])
             self.transactions.push(transaction)
-            
+
         self.show_transactions()
 
     # Show transactions method
     def show_transactions(self):
         self.record_box = []
         self.record_text = []
+        self.record_button_text = []
+
+        for widget in self.info_display.winfo_children():
+            # if self.record_box and (widget in self.record_box[0] or widget in self.record_box[1]):
+            if not isinstance(widget, tk.Canvas):
+                widget.destroy()
+
 
         for index, transaction in enumerate(self.transactions.items):
             record_text = tk.StringVar(value=transaction.format_info())
@@ -79,56 +77,61 @@ class TransactionManager(tk.Frame):
 
             # Create a label for each transaction listing
             record_label = tk.Label(self.info_display, textvariable=record_text, relief="raised", pady=10, width=30)
-            record_label.grid(row=index, column=0, columnspan=2, sticky="NESW")
+            record_label.grid(row=index, column=0, sticky="NESW")
 
             # Create a button for editing each transaction
-            edit_button = tk.Button(self.info_display, text="Edit Transaction", command=lambda idx=index: self.populate_edit_fields(idx))
-            edit_button.grid(row=index, column=2, sticky="NESW")
+            edit_button_text = tk.StringVar()
+            edit_button_text.set("Select Transaction")
 
+            edit_button = tk.Button(self.info_display, textvariable=edit_button_text, command=lambda idx=index: self.edit_fields(idx))
+            edit_button.grid(row=index, column=1, sticky="NESW")
+
+            self.record_button_text.append(edit_button_text)
             self.record_box.append((record_label, edit_button))
 
+            self.info_display.config(width=318)
+            self.info_display_canvas.config(width=318)
 
-    def toggle_edit_mode(self):
-        if self.editing_transaction_id is None:
-            # Entering edit mode
-            self.edit_transaction_button.config(text="Submit Edit")
-        else:
-            # Exiting edit mode
-            self.edit_transaction_button.config(text="Edit Transaction")
-            self.edit_transaction()
 
     # Populate edit fields method
-    def populate_edit_fields(self, index):
-        transaction = self.transactions[index]
-        self.cost_box.delete(0, tk.END)
-        self.cost_box.insert(0, transaction.cost)
-        self.category_text.set(transaction.category)
-        self.date_box.delete(0, tk.END)
-        self.date_box.insert(0, transaction.date)
-        self.details_box.delete("1.0", tk.END)
-        self.details_box.insert("1.0", transaction.details)
-        self.editing_transaction_id = transaction.transaction_id
+    def edit_fields(self, index):
 
-    # Edit transaction method
-    def edit_transaction(self):
-        if self.editing_index is not None:
-            self.transactions[self.editing_index].cost = self.cost_box.get()
-            self.transactions[self.editing_index].category = self.category_text.get()
-            self.transactions[self.editing_index].date = self.date_box.get()
-            self.transactions[self.editing_index].details = self.details_box.get("1.0", "end-1c")
+        if self.edit_mode and index == self.editing_index:
 
-            self.record_text[self.editing_index].set(self.transactions[self.editing_index].format_info())
-            self.editing_index = None
+            should_execute = self.validate_transaction()
 
-        if self.editing_transaction_id is not None:
-            edit_transaction(self.user_id, self.editing_transaction_id, self.date_box.get(), self.category_text.get(), self.cost_box.get(), self.details_box.get("1.0", "end-1c"))
-            self.attempt_variable.set("Transaction successfully updated!")
-            self.attempt_status.config(fg="green")
-            self.edit_transaction_button.grid_forget()
+            if should_execute:
+                edit_transaction(self.date_box.get(), self.category_text.get(), self.cost_box.get(), self.details_box.get("1.0", "end-1c"), self.editing_transaction_id, self.user_id)
+                self.reset_button_selection_text()
+
+                self.clear_form_fields()
+                self.edit_mode = False
+
+                self.add_transaction_button.config(state='active')
+                self.delete_transaction_button.config(state="disabled")
+
+        else:
+            self.reset_button_selection_text()
+
+            self.record_button_text[index].set("Submit Edit")
+            self.record_box[index][0].config(relief="solid")
+            self.record_box[index][1].config(bg='lime')
+
+            transaction = self.transactions[index]
             self.clear_form_fields()
-            self.editing_transaction_id = None
-            self.fill_records()
-            
+
+            self.cost_box.insert(0, transaction.cost)
+            self.category_text.set(transaction.category)
+            self.date_box.insert(0, transaction.date)
+            self.details_box.insert("1.0", transaction.details)
+            self.editing_transaction_id = transaction.transaction_id
+
+            self.editing_index = index
+            self.edit_mode = True
+
+            self.add_transaction_button.config(state='disabled')
+            self.delete_transaction_button.config(state="active")
+
 
     def clear_form_fields(self):
         """Utility method to clear all input fields."""
@@ -136,12 +139,6 @@ class TransactionManager(tk.Frame):
         self.category_text.set(self.category_options[0])  # Assuming the first option is a default or empty
         self.date_box.delete(0, tk.END)
         self.details_box.delete("1.0", tk.END)
-
-
-    # TODO unsure of this
-    def on_record_select(self, button):
-        self.record_selection = button
-
 
 
     def setup_info(self):
@@ -182,13 +179,41 @@ class TransactionManager(tk.Frame):
         self.add_transaction_button = tk.Button(self.info_input, text="Add Transaction", relief="raised", command=self.validate_transaction)
         self.add_transaction_button.grid(row=5, column=0, columnspan=2, pady=obj_pady + 10)
 
+        self.button_color_default = "SystemButtonFace"
+
         self.attempt_variable = tk.StringVar()
-        self.attempt_status = tk.Label(self.info_input, textvariable=self.attempt_variable, relief="flat")
+        self.attempt_status = tk.Label(self.info_input, textvariable=self.attempt_variable, relief="flat", height=2)
         self.attempt_status.config(width=24)
-        self.attempt_status.grid(row=6, column=0, columnspan=2, pady=obj_pady + 10)
-        self.edit_transaction_button = tk.Button(self.info_input, text="Edit Transaction", relief="raised", command=self.toggle_edit_mode)
-        self.edit_transaction_button.grid(row=6, column=0, columnspan=2, pady=10)
-        self.edit_transaction_button.grid_forget()  # Initially hide this button until needed
+        self.attempt_status.grid(row=4, column=0, columnspan=2, pady=obj_pady + 10)
+
+        self.delete_transaction_button = tk.Button(self.info_input, text="Delete Selected Transaction", relief="raised", command=self.delete_transaction)
+        self.delete_transaction_button.grid(row=7, column=0, columnspan=2, pady=obj_pady + 10, padx=10)
+        self.delete_transaction_button.config(state="disabled")
+
+
+    def delete_transaction(self):
+        delete_transaction(self.editing_transaction_id)
+
+        self.after(1000)
+
+        self.editing_transaction_id = None
+        self.edit_mode = False
+        self.editing_index = None
+
+        self.clear_form_fields()
+        self.fill_records()
+
+        self.reset_button_selection_text()
+
+
+    def empty_attempt_variable(self):
+        self.attempt_variable.set("")
+
+    def reset_button_selection_text(self):
+        for ind in range(len(self.record_button_text)):
+            self.record_button_text[ind].set("Select Transaction")
+            self.record_box[ind][0].config(relief="raised")
+            self.record_box[ind][1].config(bg=self.button_color_default)
 
 
     def validate_transaction(self):
@@ -196,18 +221,24 @@ class TransactionManager(tk.Frame):
         if self.cost_box.get() == "":
             self.attempt_variable.set("Missing required field: cost")
             self.attempt_status.config(fg="red")
-            return
+
+            self.after(3000, self.empty_attempt_variable)
+            return False
 
 
         elif self.category_text.get().strip() == "":
             self.attempt_variable.set("Missing required field: category")
             self.attempt_status.config(fg="red")
-            return
+
+            self.after(3000, self.empty_attempt_variable)
+            return False
 
         elif self.date_box.get() == "":
            self.attempt_variable.set("Missing required field: date")
            self.attempt_status.config(fg="red")
-           return
+
+           self.after(3000, self.empty_attempt_variable)
+           return False
 
 
         try:
@@ -216,7 +247,9 @@ class TransactionManager(tk.Frame):
         except ValueError:
             self.attempt_variable.set("Cost contains unsupported\n characters")
             self.attempt_status.config(fg="red")
-            return
+
+            self.after(3000, self.empty_attempt_variable)
+            return False
 
 
         try:
@@ -226,27 +259,42 @@ class TransactionManager(tk.Frame):
         except ValueError:
             self.attempt_variable.set("Requires a valid date\n in YYYY-MM-DD format")
             self.attempt_status.config(fg="red")
-            return
+
+            self.after(3000, self.empty_attempt_variable)
+            return False
 
 
-        output = Transaction(parsed_date, self.category_text.get(), val, self.details_box.get("1.0", "end-1c"))
+        if self.edit_mode: # and add_while_edit:
 
-        self.cost_box.delete("0", tk.END)
-        self.category_box.option_clear()
-        self.date_box.delete("0", tk.END)
-        self.details_box.delete("1.0", tk.END)
+            edit_transaction(self.user_id, self.editing_transaction_id, self.date_box.get(), self.category_text.get(), self.cost_box.get(), self.details_box.get("1.0", "end-1c"))
+            self.attempt_variable.set("Transaction has been\n successfully edited!")
+            self.attempt_status.config(fg="green")
 
-        self.post_transaction(output)
+            self.reset_button_selection_text()
 
-        self.attempt_variable.set("Transaction has been\n successfully posted!")
-        self.attempt_status.config(fg="green")
-        return
+            self.edit_mode = False
 
+            self.add_transaction_button.config(state='active')
+            self.delete_transaction_button.config(state="disabled")
 
-    def post_transaction(self, t):
+            self.clear_form_fields()
+            self.fill_records()
 
-        add_transaction(self.user_id, t.date, t.category, t.cost, t.details)
-        self.fill_records()
+            self.after(3000, self.empty_attempt_variable)
+            return True
+
+        else:
+            self.reset_button_selection_text()
+
+            add_transaction(self.user_id, parsed_date, self.category_text.get(), val, self.details_box.get("1.0", "end-1c"))
+            self.clear_form_fields()
+            self.fill_records()
+
+            self.attempt_variable.set("Transaction has been\n successfully posted!")
+            self.attempt_status.config(fg="green")
+
+            self.after(3000, self.empty_attempt_variable)
+            return True
 
 
 
@@ -260,14 +308,20 @@ class Transaction:
         self.details = details
 
     def get_info(self):
-        return (self.transaction_id, self.date, self.category, self.cost, self.details)
+        return (self.date, self.category, self.cost, self.details)
+
 
     def format_info(self):
         formatted_details = "\t".join(self.details.split("\n"))
-        return f"({self.date}) {self.category}: {self.cost}\n{formatted_details}"
+        return f"({self.date})\n{self.category}: {self.cost}\n{formatted_details}"
+
 
     def __lt__(self, other):
-        return self if self.date <= other.date else other
+        if self.transaction_id < other.transaction_id:
+            return self
+
+        else:
+            return other
 
 
 class Stack:
@@ -283,7 +337,7 @@ class Stack:
 
     def push(self, item):
         self.items.append(item)
-        self.items = sorted(self.items, key=(lambda x: x.date))
+        self.items = sorted(self.items, key=(lambda x: x.date), reverse=True)
 
 
     def pop(self):
@@ -294,7 +348,7 @@ class Stack:
         for i in items:
             self.push(i)
 
-        self.items = sorted(self.items, key=(lambda x: x.date))
+        self.items = sorted(self.items, key=(lambda x: x.date), reverse=True)
 
 
     def pop_all(self, output_list):
@@ -302,11 +356,10 @@ class Stack:
             output_list.append(self.pop())
 
     def __getitem__(self, index):
-        return self.items[len(self) - index - 1]
+        return self.items[index]
 
     def __setitem__(self, index, value):
-        self.items[len(self) - index - 1] = value
-
+        self.items[index] = value
 
 
 # for testing
