@@ -414,6 +414,15 @@ def get_current_month_income_total(user_id):
     conn.close()
     return total_expense
 
+def delete_transaction(transaction_id):
+    """Delete a transaction from the database by its ID."""
+    sql = "DELETE FROM transactions WHERE id = ?"
+    conn = create_connection()
+    c = conn.cursor()
+    c.execute(sql, (transaction_id,))
+    conn.commit()
+    conn.close()
+
 # Ensure the database and tables are created at initial run
 setup_database()
 
