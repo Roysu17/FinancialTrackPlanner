@@ -7,7 +7,10 @@ Certainly! Below is a template for a README markdown file tailored for a Python 
 
 The Personal Finance Tracker is a Python application designed to help individuals manage their finances effectively by tracking income, expenses, and budgeting.
 
-![Personal Finance Tracker Screenshot](screenshot.png)
+![Personal Finance Tracker Screenshot](Screenshot.png)
+![Personal Finance Tracker - Reports](Screenshot2.png)
+![Personal Finance Tracker - Budget](Screenshot3.png)
+![Personal Finance Tracker - Transactions](Screenshot4.png)
 
 ## Features
 
