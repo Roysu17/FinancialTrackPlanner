@@ -1,7 +1,5 @@
 # FinancialTrackPlanner
  FinTrackPlanner is a Tkinter-based Personal Finance Tracker and Budget Planner application designed to help users manage their finances efficiently. Offering features like expense tracking, budget planning, and financial reporting, it aims to provide an intuitive and comprehensive tool for personal financial management. Built with Python and SQLite, this project emphasizes user-friendly design, data security, and insightful financial analytics to promote better financial decisions.
-Certainly! Below is a template for a README markdown file tailored for a Python application like the Personal Finance Tracker:
-
 
 # Personal Finance Tracker
 
