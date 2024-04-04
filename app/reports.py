@@ -5,7 +5,6 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from database import get_monthly_summary, get_last_month_summary
-import os
 
 class ReportWindow(tk.Frame):
     def __init__(self, parent, user_id):

@@ -1,12 +1,12 @@
 import tkinter as tk
 from tkinter import ttk
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from database import get_monthly_summary, get_recent_transactions
 from budget import BudgetWindow
 from reports import ReportWindow
 from transactions import TransactionManager
-import matplotlib.pyplot as plt
-import sys
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Dashboard(tk.Frame):
     def __init__(self, parent, user_id, *args, **kwargs):

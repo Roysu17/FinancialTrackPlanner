@@ -1,4 +1,5 @@
 import tkinter as tk
+
 from login import LoginWindow
 from dashboard import Dashboard
 from database import get_account_summary
