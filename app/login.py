@@ -70,26 +70,34 @@ class LoginWindow(tk.Frame):
     def register_user(self):
         new_username = self.new_username_entry.get()
         new_password = self.new_password_entry.get()
+
         if new_username and new_password:
-            add_user(new_username, new_password)
-            messagebox.showinfo("Registration Success", "You have successfully registered.")
-            # Destroy registration frame
-            self.registration_frame.destroy()
-            # Recreate the login frame
-            self.login_frame = Frame(self.parent)
-            self.login_frame.pack(expand=True)
-            # Reinitialize login elements
-            self.username_label = Label(self.login_frame, text="Username:")
-            self.username_label.pack(pady=10)
-            self.username_entry = Entry(self.login_frame)
-            self.username_entry.pack(pady=5)
-            self.password_label = Label(self.login_frame, text="Password:")
-            self.password_label.pack(pady=10)
-            self.password_entry = Entry(self.login_frame, show="*")
-            self.password_entry.pack(pady=5)
-            self.login_button = Button(self.login_frame, text="Login", command=self.on_login_clicked)
-            self.login_button.pack(pady=10)
-            self.register_button = Button(self.login_frame, text="Register", command=self.show_registration_frame)
-            self.register_button.pack(pady=10)
+            # Check if the username already exists in the database
+            if get_user_id(new_username):
+                messagebox.showerror("Registration Failed",
+                                     "Username already exists. Please choose a different username.")
+            else:
+                # Add the new user to the database
+                add_user(new_username, new_password)
+                messagebox.showinfo("Registration Success", "You have successfully registered.")
+                # Destroy registration frame
+                self.registration_frame.destroy()
+                # Recreate the login frame
+                self.login_frame = Frame(self.parent)
+                self.login_frame.pack(expand=True)
+                # Reinitialize login elements
+                self.username_label = Label(self.login_frame, text="Username:")
+                self.username_label.pack(pady=10)
+                self.username_entry = Entry(self.login_frame)
+                self.username_entry.pack(pady=5)
+                self.password_label = Label(self.login_frame, text="Password:")
+                self.password_label.pack(pady=10)
+                self.password_entry = Entry(self.login_frame, show="*")
+                self.password_entry.pack(pady=5)
+                self.login_button = Button(self.login_frame, text="Login", command=self.on_login_clicked)
+                self.login_button.pack(pady=10)
+                self.register_button = Button(self.login_frame, text="Register", command=self.show_registration_frame)
+                self.register_button.pack(pady=10)
         else:
             messagebox.showerror("Registration Failed", "Please enter a username and password.")
+
