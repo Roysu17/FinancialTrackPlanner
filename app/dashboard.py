@@ -60,11 +60,13 @@ class Dashboard(tk.Frame):
         account_summary = get_monthly_summary(self.user_id)
         print(account_summary)
 
-        fig, ax = plt.subplots(figsize=(4, 4))
-        ax.pie(account_summary.values(), labels=account_summary.keys(), autopct='%1.1f%%', startangle=180, textprops={'fontsize': 7})
+        if account_summary:  # Check if account summary is not empty
+            fig, ax = plt.subplots(figsize=(4, 4))
+            ax.pie(account_summary.values(), labels=account_summary.keys(), autopct='%1.1f%%', startangle=180,
+                   textprops={'fontsize': 7})
 
-        chart1 = FigureCanvasTkAgg(fig, summary_frame)
-        chart1.get_tk_widget().pack()
+            chart1 = FigureCanvasTkAgg(fig, summary_frame)
+            chart1.get_tk_widget().pack()
 
         details_frame = tk.Frame(dashboard_tab)
         details_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
@@ -74,7 +76,8 @@ class Dashboard(tk.Frame):
         transactions = get_recent_transactions(self.user_id)
         num = 0
         for transaction in transactions:
-            tk.Label(details_frame, text=f"{transaction['date']} - {transaction['category']}: ${transaction['cost']} - {transaction['details']}").pack()
+            tk.Label(details_frame,
+                     text=f"{transaction['date']} - {transaction['category']}: ${transaction['cost']} - {transaction['details']}").pack()
             num += 1
             if num == 10:
                 break
