@@ -77,7 +77,6 @@ Once the application is set up and running, you can use it to:
 - View transaction history.
 - Generate reports and insights into your financial data.
 - Set and track your budget.
-- Only reports can be auto generated on the fly, to see other changes please re-login
 
 ## Troubleshooting
 
