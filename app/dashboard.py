@@ -7,6 +7,7 @@ from database import get_monthly_summary, get_recent_transactions
 from budget import BudgetWindow
 from reports import ReportWindow
 from transactions import TransactionManager
+from dashboardManager import DashboardManager
 
 class Dashboard(tk.Frame):
     def __init__(self, parent, user_id, *args, **kwargs):
@@ -52,6 +53,12 @@ class Dashboard(tk.Frame):
         dashboard_tab = tk.Frame(notebook)
         notebook.add(dashboard_tab, text="Dashboard")
 
+        dashboard_frame = DashboardManager(dashboard_tab, self.user_id)
+        self.onUpdate3 = dashboard_frame.update
+        dashboard_frame.pack(fill="both", expand=True)
+
+
+        """
         summary_frame = tk.Frame(dashboard_tab)
         summary_frame.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
@@ -81,13 +88,14 @@ class Dashboard(tk.Frame):
             num += 1
             if num == 10:
                 break
+        """
     
                 
     def create_transactions_tab(self, notebook):
         transactions_tab = tk.Frame(notebook)
         notebook.add(transactions_tab, text="Transactions")
 
-        transactions_frame = TransactionManager(transactions_tab, self.user_id, self.onUpdate)
+        transactions_frame = TransactionManager(transactions_tab, self.user_id, self.onUpdate, self.onUpdate2, self.onUpdate3)
         transactions_frame.pack(fill="both", expand=True)
 
 
@@ -96,7 +104,7 @@ class Dashboard(tk.Frame):
         notebook.add(budget_tab, text="Budget")
 
         budget_frame = BudgetWindow(budget_tab, self.user_id)
-        #self.onUpdate = budget_frame.update
+        self.onUpdate = budget_frame.update
         budget_frame.pack(fill="both", expand=True)
 
     def create_report_tab(self, notebook):
@@ -104,7 +112,7 @@ class Dashboard(tk.Frame):
         notebook.add(report_tab, text="Report")
 
         report_frame = ReportWindow(report_tab, self.user_id)
-        self.onUpdate = report_frame.update
+        self.onUpdate2 = report_frame.update
         # Implementation for the Report tab
         report_frame.pack(fill="both", expand=True)
 

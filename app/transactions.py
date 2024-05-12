@@ -10,14 +10,18 @@ def updateable(func):
     def in_func(self, *args, **kwargs):
         func(self, *args, **kwargs)
         self.onUpdate()
+        self.onUpdate2()
+        self.onUpdate3()
     return in_func
 
 class TransactionManager(tk.Frame):
 
-    def __init__(self, parent, user_id, onUpdate):
+    def __init__(self, parent, user_id, onUpdate, onUpdate2, onUpdate3):
         super().__init__(parent)
         self.parent = parent
         self.onUpdate = onUpdate
+        self.onUpdate2 = onUpdate2
+        self.onUpdate3 = onUpdate3
 
         # Store user_id for database queries
         self.user_id = user_id
